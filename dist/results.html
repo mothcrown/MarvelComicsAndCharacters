@@ -4,25 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Resultado de las votaciones</title>
+  <title>Los mejores comics y personajes de Marvel</title>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>Las mejores películas de terror</h1>
+      <h1>Los mejores comics y personajes de Marvel</h1>
     </header>
     <div class="content">
         <section>
             <div class="title">
               <h2>Estado de las votaciones</h2>
             </div>
-            <div class="options">
-              <label for="selectChart">
-                <span>Selecciona tipo de gráfica:</span><br />
-                <select id="selectChart" tabindex=0 aria-label="Elige cómo quieres ver los gráficos"></select>
-              </label>
+            <div class="superheroesResult">
+              <div class="heroOptions">
+                <label for="selectHeroChart">
+                  <span>Selecciona tipo de gráfica para mostrar votos a personajes:</span><br />
+                  <select id="selectHeroChart" tabindex=0 aria-label="Elige cómo quieres ver los gráficos de votos a personajes"></select>
+                </label>
+              </div>
+              <div id="chartHeroes" tabindex=1></div>
             </div>
-            <div id="chart" tabindex=1></div>
             <div class="background"></div>
           </section>
     </div>

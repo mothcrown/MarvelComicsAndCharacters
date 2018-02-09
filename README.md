@@ -5,6 +5,6 @@ Choose your favourite Marvel comic and your favourite Marvel character using a s
 Uses the pretty damn awesome [simplePagination.js](http://flaviusmatis.github.io/simplePagination.js/) plugin by [@flavismatis](https://github.com/flaviusmatis). Show the man some love!
 
 
-Pls don't steal my key ok? ok
+Also pls don't steal my key ok? ok
 
 _$mothcrown._

@@ -23,7 +23,7 @@
           <div class="paginator"></div>
           <div id="text">
             <p>Id: <span id="id"></span></p>
-            <p>Nombre: <span id="name"></span></p>
+            <p>Nombre: <span id="main"></span></p>
             <p>Nº apariciones: <span id="comics"></span></p>
             <p>Descripción: <span id="description"></span></p>
           </div>
@@ -34,7 +34,7 @@
   </div>
   <div class="dialog">
     <div class="form">
-        <p>Vas a votar por <span id="tituloForm"></span></p>
+        <p>Vas a votar por <span id="nameForm"></span></p>
         <p>¡Rellena este formulario y entra en el sorteo de dos entradas de cine!</p>
         <label for="txtFirstName">
           <span>Nombre<span><br />
@@ -47,10 +47,10 @@
         <label for="txtEmail">
           <span>Email</span><br />
           <input id="txtEmail" type="email" aria-label="Introduce tu dirección de correo electrónico" />
-        </label>
+        </label><br />
         <label for="txtTfno">
-            <span>Email</span><br />
-            <input id="txtTfno" type="phone" aria-label="Introduce tu número de teléfono" />
+            <span>Telefono</span><br />
+            <input id="txtTfno" type="tel" aria-label="Introduce tu número de teléfono" />
           </label>
         <div class="buttons">
             <input type="button" id="btnReturn" value="Volver" aria-label="Haz click en Volver o pulsa Escape para volver a la selección de personajes">

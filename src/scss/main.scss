@@ -264,7 +264,7 @@ section {
   font-size: 120%;
 }
 
-input[type="text"], input[type="email"]  {
+input[type="text"], input[type="email"], input[type="tel"]  {
   width: 25em;
   @media (max-width: 360px) {
     width: 15em;
@@ -297,7 +297,7 @@ input[type="button"] {
   z-index: 15;
 }
 
-#tituloForm {
+#nameForm {
   font-weight: bold;
 }
 
@@ -316,10 +316,11 @@ input[type="button"] {
   z-index: 25;
 }
 
-.options {
+.heroOptions {
   position: relative;
   z-index: 4;
   color: ghostwhite;
+  @include textshadow();
 }
 
 #chart {
@@ -337,11 +338,12 @@ select {
 }
 
 footer {
-  position: fixed;
-  bottom: 0;
-  right: 0;
+  position: relative;
+  margin-left: 90%;
+  bottom: 10%;
   padding-right: 2em;
   font-size: 200%;
+  z-index: 40;
   a {
     color: ghostwhite;
     text-decoration: none;
@@ -366,10 +368,15 @@ footer {
 
 .paginator {
   position: relative;
-  z-index: 25;
+  z-index: 3;
   margin:auto;
   margin-top: 1em;
   ul {
    margin-left: 35%;
   }
+}
+
+.superheroesResult {
+  position: relative;
+  z-index: 10;
 }
