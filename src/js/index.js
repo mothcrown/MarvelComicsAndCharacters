@@ -1,4 +1,5 @@
 import $ from 'jquery'
+import './jquery.simplePagination'
 
 import arrow from '../images/grey-arrow.png'
 
@@ -10,13 +11,39 @@ const superheroesLength = 10
 
 let superheroes
 
-function refreshInfo() {
+function activateDescriptionToggle(description) {
+  $('#descriptionToggle').click(() => {
+    if ($('#descriptionToggle').text() === '(Ver más)') {
+      $('#description').text(description)
+      $('#descriptionToggle').text('(...)')
+    } else {
+      $('#description').text(`${description.substring(0, 20)}... `)
+      $('#descriptionToggle').text('(Ver más)')
+    }
+  })
+}
+
+function addDescriptionToggle(description) {
+  $('#description').text(`${description.substring(0, 20)}... `)
+  $('<span id="descriptionToggle">(Ver más)</span>').insertAfter('#description')
+  activateDescriptionToggle(description)
+}
+
+function refreshSuperHeroInfo() {
   const index = +$('.principal').attr('id').substr(10)
   $('#id').text(superheroes[index].id)
   $('#name').text(superheroes[index].name)
   $('#comics').text(superheroes[index].comics.available)
+
   const description = (superheroes[index].description !== '') ? superheroes[index].description : 'No disponible'
   $('#description').text(description)
+
+  if ($('#descriptionToggle') !== undefined) {
+    $('#descriptionToggle').remove()
+  }
+  if (description !== 'No disponible') {
+    addDescriptionToggle(description)
+  }
 }
 
 function moveCarouselLeft() {
@@ -153,14 +180,13 @@ function moveCarousel(index) {
       i = 0
     }
     j += 1
-    
   } while (j !== carouselLength)
   const rightarrow = `<div id="rightarrow" class="arrow" aria-label="Mueve selección a la derecha"><img src="${arrow}" aria-labelledby="rightarrow" alt="Flecha derecha"></div>`
   $(rightarrow).appendTo('#carrusel')
   activateCarousel()
   // activatePrincipal()
   activateArrows()
-  refreshInfo()
+  refreshSuperHeroInfo()
 }
 
 function generateCarousel() {
@@ -198,8 +224,12 @@ const queryFor = option => ({
   comics: 'https://gateway.marvel.com/v1/public/comics'
 })[option]
 
-function loadSuperheroes() {
-  $.getJSON(queryFor('characters'), { limit: superheroesLength, apikey: publicKey }).done(function (response) {
+function loadSuperheroes(offset) {
+  superheroes = []
+  $.getJSON(queryFor('characters'), { offset: offset, limit: 100, apikey: publicKey }).done(function (response) {
+    for (let i = 0; i < superheroesLength; i++) {
+      superheroes.push(response.data.results[i])
+    }
     superheroes = response.data.results
     generateCarousel()
   })
@@ -207,8 +237,9 @@ function loadSuperheroes() {
 
 
 $(document).ready(() => {
-  loadSuperheroes()
+  loadSuperheroes(0)
   // activatePrincipal()
+  activateDescriptionToggle()
   activateKeys()
   activateButtons()
   // loadVotes()

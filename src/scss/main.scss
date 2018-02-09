@@ -1,3 +1,5 @@
+@import 'simplePagination';
+
 @mixin blur($px: 5px) {
   -webkit-filter: blur($px);
   -moz-filter: blur($px);
@@ -355,4 +357,9 @@ footer {
     text-align: center;
     @include textshadow();
   }
+}
+
+#descriptionToggle {
+  cursor: pointer;
+  font-style: italic;
 }
