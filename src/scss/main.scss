@@ -363,3 +363,13 @@ footer {
   cursor: pointer;
   font-style: italic;
 }
+
+.paginator {
+  position: relative;
+  z-index: 25;
+  margin:auto;
+  margin-top: 1em;
+  ul {
+   margin-left: 35%;
+  }
+}

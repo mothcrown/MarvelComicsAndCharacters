@@ -235,9 +235,21 @@ function loadSuperheroes(offset) {
   })
 }
 
+function loadPaginator() {
+  $('.paginator').pagination({
+    items: 100,
+    itemsOnPage: 10,
+    cssStyle: 'light-theme',
+    onPageClick: (pageNum) => {
+      loadSuperheroes((pageNum * 10) - 10)
+    }
+  })
+}
+
 
 $(document).ready(() => {
   loadSuperheroes(0)
+  loadPaginator()
   // activatePrincipal()
   activateDescriptionToggle()
   activateKeys()
