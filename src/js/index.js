@@ -11,7 +11,7 @@ const superheroesLength = 10
 let superheroes
 
 function refreshInfo() {
-  const index = +$('.third.left').attr('id').substr(10)
+  const index = +$('.principal').attr('id').substr(10)
   $('#id').text(superheroes[index].id)
   $('#name').text(superheroes[index].name)
   $('#comics').text(superheroes[index].comics.available)
@@ -132,6 +132,7 @@ function moveCarousel(index) {
   } else {
     i = index
   }
+  
   let j = 0
   const leftarrow = `<div id="leftarrow" class="arrow" aria-label="Mueve selección a la izquierda"><img src="${arrow}" aria-labelledby="leftarrow" alt="Flecha izquierda"></div>`
   $(leftarrow).appendTo('#carrusel')
@@ -143,6 +144,7 @@ function moveCarousel(index) {
       carouselElement = `<div id="superheroe${i}" data-name="${superhero.name}" class="superheroes ${carouselClasses[j]}"><img src="${superheroPic}" alt="${superhero.name}"></div>`
     } else {
       carouselElement = `<div id="superheroe${i}" data-name=="${superhero.name}" class="superheroes ${carouselClasses[j]}" tabindex=1 aria-label="${superhero.name}"><img src="${superheroPic}" aria-labelledby="${superhero.name}" alt="${superhero.name}"></div>`
+      $('#currentHero').text(`${i + 1}/10`)
     }
 
     $(carouselElement).appendTo('#carrusel')
@@ -151,6 +153,7 @@ function moveCarousel(index) {
       i = 0
     }
     j += 1
+    
   } while (j !== carouselLength)
   const rightarrow = `<div id="rightarrow" class="arrow" aria-label="Mueve selección a la derecha"><img src="${arrow}" aria-labelledby="rightarrow" alt="Flecha derecha"></div>`
   $(rightarrow).appendTo('#carrusel')

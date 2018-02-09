@@ -91,6 +91,7 @@ section {
   z-index: 4;
   h2 {
     text-align: center;
+    margin-top: 0;
     margin-bottom: 1em;
     @include textstroke;
     @media (max-width: 360px) {
@@ -342,5 +343,16 @@ footer {
   a {
     color: ghostwhite;
     text-decoration: none;
+  }
+}
+
+#counter {
+  position: relative;
+  z-index: 25;
+  color: red;
+  p {
+    margin: 0;
+    text-align: center;
+    @include textshadow();
   }
 }
