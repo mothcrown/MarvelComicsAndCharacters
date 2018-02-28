@@ -216,8 +216,9 @@ function activatePrincipal(mode) {
  * @param {*} index 
  */
 function moveCarousel(mode, index) {
+  deactivateArrows()
   const carouselMode = (mode === 'superheroes') ? '#carruselSuperheroes' : '#carruselComics'
-  $(carouselMode).children().remove()
+  $(carouselMode).empty()
   
   let i
   if (index === -1) {
@@ -276,8 +277,8 @@ function moveCarousel(mode, index) {
 }
 
 function deactivateButtons() {
-  $('#btnReturn').off()
-  $('#btnVote').off()
+  $('#btnReturn').off('click')
+  $('#btnVote').off('click')
 }
 
 function activateButtons(mode) {
