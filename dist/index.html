@@ -13,23 +13,42 @@
       </header>
       <div class="content">
         <section>
-          <div class="title">
-            <h2>Elige y vota por tu personaje Marvel favorito</h2>
-          </div> 
-          <div id="counter"><p id="currentHero">1/10</p></div>
-          <div class="carruselaux">
-            <div id="carrusel"  tabindex=0  aria-label="Elige tu personaje Marvel favorito, puedes usar las flechas para seleccionar personaje, pulsa enter para aceptar"></div>
+          <div id="superheroes">
+            <div class="title">
+              <h2>Elige y vota por tu personaje Marvel favorito</h2>
+            </div> 
+            <div class="counter"><p id="currentHero"></p></div>
+            <div class="spinnerSuper"></div>
+            <div class="carruselaux">
+              <div id="carruselSuperheroes"  tabindex=0  aria-label="Elige tu personaje Marvel favorito, puedes usar las flechas para seleccionar personaje"></div>
+            </div>
+            <div id="paginatorSuperheroes" class="paginator"></div>
+            <div id="textSuper">
+              <p>Id: <span id="idsuper"></span></p>
+              <p>Nombre: <span id="name"></span></p>
+              <p>Nº apariciones: <span id="comics"></span></p>
+              <p>Descripción: <span id="descriptionsuper"></span></p>
+            </div>
           </div>
-          <div class="paginator"></div>
-          <div id="text">
-            <p>Id: <span id="id"></span></p>
-            <p>Nombre: <span id="main"></span></p>
-            <p>Nº apariciones: <span id="comics"></span></p>
-            <p>Descripción: <span id="description"></span></p>
+          <div id="comics">
+            <div class="title">
+              <h2>Elige y vota tu comic Marvel favorito</h2>
+            </div> 
+            <div class="counter"><p id="currentComic"></p></div>
+            <div class="spinnerComic"></div>
+            <div class="carruselaux">
+              <div id="carruselComics"  tabindex=1  aria-label="Elige tu comic Marvel favorito, puedes usar las flechas para seleccionar personaje"></div>
+            </div>
+            <div id="paginatorComics" class="paginator"></div>
+            <div id="textComic">
+              <p>Id: <span id="comicid"></span></p>
+              <p>Título: <span id="title"></span></p>
+              <p>Número: <span id="issue"></span></p>
+              <p>Descripción: <span id="descriptioncomic"></span></p>
+            </div>
           </div>
           <div class="background"></div>
         </section>
-        
       </div>
   </div>
   <div class="dialog">

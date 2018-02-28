@@ -8,59 +8,71 @@ let type = 'Tarta'
 let heroVotes
 let comicVotes
 let totalHeroVotes
+let totalComicVotes
 
 /**
  * Píllame quiénes han sido votados
  */
-function getVotedHeroes() {
-  const votedHeroes = []
-  Object.values(heroVotes.votos).map((vote) => {
-    const name = vote.voto
+function getVoted(mode) {
+  const voted = []
+  const votes = (mode === 'superheroes') ? heroVotes : comicVotes
+  Object.values(votes.votos).map((vote) => {
+    const newVote = vote.voto
     let found = false
-    for (let i = 0; i < votedHeroes.length; i += 1) {
-      if (name === votedHeroes[i]) {
+    for (let i = 0; i < voted.length; i += 1) {
+      if (newVote === voted[i]) {
         found = true
       }
     }
 
     if (!found) {
-      votedHeroes.push(name)
+      voted.push(newVote)
     }
   })
-  return votedHeroes
+  return voted
 }
 
 /**
- * Esto hay que refactorizarlo para añadir comics.
- * No me va a dar tiempo.
+ * Refactorizado! Aún así feo como pegarle a un padre.
  */
-function drawChart() {
+function drawChart(mode) {
   const data = new google.visualization.DataTable()
-  data.addColumn('string', 'Personaje')
+  let votes
+  let totalVotes
+  if (mode === 'superheroes') {
+    data.addColumn('string', 'Personaje')
+    votes = heroVotes
+    totalVotes = totalHeroVotes
+  } else {
+    data.addColumn('string', 'Comic')
+    votes = comicVotes
+    totalVotes = totalComicVotes
+  }
   data.addColumn('number', 'Votos')
 
-  let heroName
-  let numHeroVotes
-  let arialabel = "Total de votos" + totalHeroVotes + ","
+  let name
+  let numVotes
+  let arialabel = `Total de votos ${totalVotes}, `
 
-  const votedHeroes = getVotedHeroes()
-  const numVotedHeroes = votedHeroes.length
+  const voted = getVoted(mode)
+  const numVoted = voted.length
 
-  for (let i = 0; i < numVotedHeroes; i += 1) {
-    heroName = votedHeroes[i]
-    numHeroVotes = 0
-    for (let j = 0; j < totalHeroVotes; j += 1) {
-      if (heroName === heroVotes.votos[j].voto) {
-        numHeroVotes += 1
+  for (let i = 0; i < numVoted; i += 1) {
+    name = voted[i]
+    numVotes = 0
+    for (let j = 0; j < totalVotes; j += 1) {
+      if (name === votes.votos[j].voto) {
+        numVotes += 1
       }
     }
-    arialabel += `${heroName} ${numHeroVotes} votos, `
-    data.addRow([heroName, numHeroVotes])
+    arialabel += `${name} ${numVotes} votos, `
+    data.addRow([name, numVotes])
   }
-
-  $('#chartHeroes').attr('aria-label', arialabel)
+  const chartMode = (mode === 'superheroes') ? 'chartHeroes' : 'chartComics'
+  const title = (mode === 'superheroes') ? 'personajes' : 'comics'
+  $(`#${chartMode}`).attr('aria-label', arialabel)
   const options = {
-    title: 'Votaciones de personajes',
+    title: `Votación de ${title}`,
     width: 400,
     height: 300,
     backgroundColor: 'transparent',
@@ -73,22 +85,21 @@ function drawChart() {
   let chart
   switch (type) {
     case 'Tarta':
-      chart = new google.visualization.PieChart(document.getElementById('chartHeroes'))
+      chart = new google.visualization.PieChart(document.getElementById(chartMode))
       break
     case 'Barras':
-      chart = new google.visualization.BarChart(document.getElementById('chartHeroes'))
+      chart = new google.visualization.BarChart(document.getElementById(chartMode))
       break
     case 'Columnas':
-      chart = new google.visualization.ColumnChart(document.getElementById('chartHeroes'))
+      chart = new google.visualization.ColumnChart(document.getElementById(chartMode))
       break
     case 'Donut':
       options.pieHole = 0.4
-      chart = new google.visualization.PieChart(document.getElementById('chartHeroes'))
+      chart = new google.visualization.PieChart(document.getElementById(chartMode))
       break
     default:
       break
   }
-  
   chart.draw(data, options)
 }
 
@@ -98,10 +109,15 @@ function drawChart() {
 function loadSelect() {
   chartOptions.map((option) => {
     $('#selectHeroChart').append(`<option value="${option}">${option}</option>`)
+    $('#selectComicChart').append(`<option value="${option}">${option}</option>`)
   })
   $('#selectHeroChart').change(() => {
     type = $('#selectHeroChart').val()
-    drawChart()
+    drawChart('superheroes')
+  })
+  $('#selectComicChart').change(() => {
+    type = $('#selectComicChart').val()
+    drawChart('comics')
   })
 }
 
@@ -111,9 +127,9 @@ function loadSelect() {
 function loadVotes() {
   if (Storage !== void(0)) {
     heroVotes = JSON.parse(localStorage.herovotes)
-    // comicVotes = JSON.parse(localStorage.comicvotes)
+    comicVotes = JSON.parse(localStorage.comicvotes)
     totalHeroVotes = Object.keys(heroVotes.votos).length
-    // totalComicVotes = Object.keys(comicVotes.votes).length
+    totalComicVotes = Object.keys(comicVotes.votos).length
   }
 }
 
@@ -122,6 +138,6 @@ $(document).ready(() => {
   loadSelect()
   setTimeout(() => {
     google.charts.load('visualization', '1', { packages: ['corechart'] })
-    google.charts.setOnLoadCallback(drawChart)
+    // google.charts.setOnLoadCallback(drawChart)
   }, 200)
 })

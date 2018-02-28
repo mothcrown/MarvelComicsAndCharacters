@@ -2,136 +2,162 @@ import $ from 'jquery'
 import './jquery.simplePagination'
 
 import arrow from '../images/grey-arrow.png'
+import spinner from '../images/spinner.gif'
 
 // DO NOT STEAL!!11!
 const publicKey = 'd7de5198717c06d40d93e733cff7e438'
 
+let superheroes
+let comics
+let heroVotes
+let comicVotes
+
 // CONSTS
 const carouselLength = 5
 const carouselClasses = ['third left', 'second left', 'principal', 'second right', 'third right']
-const superheroesLength = 10
-
-let superheroes
-let heroVotes
+const petitionLength = 100
 
 /**
  * Hay mejores formas de hacer esto, pero creo que esta es bastante mona!
  * @param {*} description 
  */
-function activateDescriptionToggle(description) {
-  $('#descriptionToggle').click(() => {
-    if ($('#descriptionToggle').text() === '(Ver más)') {
-      $('#description').text(description)
-      $('#descriptionToggle').text('(...)')
+function activateDescriptionToggle(descriptionMode, descriptionToggleMode, description) {
+  $(`#${descriptionToggleMode}`).click(() => {
+    if ($(`#${descriptionToggleMode}`).text() === '(Ver más)') {
+      $(descriptionMode).text(description)
+      $(`#${descriptionToggleMode}`).text('(...)')
     } else {
-      $('#description').text(`${description.substring(0, 20)}... `)
-      $('#descriptionToggle').text('(Ver más)')
+      $(descriptionMode).text(`${description.substring(0, 20)}... `)
+      $(`#${descriptionToggleMode}`).text('(Ver más)')
     }
   })
 }
 
 /**
- * Añado (ver más)
+ * Añado (ver más) tanto para comics como para superhéroes
  * @param {*} description 
  */
-function addDescriptionToggle(description) {
-  $('#description').text(`${description.substring(0, 20)}... `)
-  $('<span id="descriptionToggle">(Ver más)</span>').insertAfter('#description')
-  activateDescriptionToggle(description)
+function addDescriptionToggle(mode, description) {
+  const descriptionMode = (mode === 'superheroes') ? '#descriptionsuper' : '#descriptioncomic'
+  $(descriptionMode).text(`${description.substring(0, 20)}... `)
+  const descriptionToggleMode = (mode === 'superheroes') ? 'descriptionToggleSuper' : 'descriptionToggleComic'
+  $(`<span id="${descriptionToggleMode}">(Ver más)</span>`).insertAfter(descriptionMode)
+  activateDescriptionToggle(descriptionMode, descriptionToggleMode, description)
 }
 
 /**
- * Cambia info cuando movemos el carrusel
+ * Cambia info cuando movemos el carrusel. Esto hay que refactorizarlo porque
+ * Virgen bendita!
  */
-function refreshSuperHeroInfo() {
-  const index = +$('.principal').attr('id').substr(10)
-  $('#id').text(superheroes[index].id)
-  $('#main').text(superheroes[index].name)
-  $('#comics').text(superheroes[index].comics.available)
-
-  const description = (superheroes[index].description !== '') ? superheroes[index].description : 'No disponible'
-  $('#description').text(description)
-
-  if ($('#descriptionToggle') !== undefined) {
-    $('#descriptionToggle').remove()
-  }
-  if (description !== 'No disponible') {
-    addDescriptionToggle(description)
+function refreshInfo(mode) {
+  const index = +$(`.${mode}.principal`).attr('id').substr(9)
+  let description
+  if (mode === 'superheroes') {
+    $('#idsuper').text(superheroes[index].id)
+    $('#name').text(superheroes[index].name)
+    $('#comics').text(superheroes[index].comics.available)
+    description = (superheroes[index].description !== '') ? superheroes[index].description : 'No disponible'
+    $('#descriptionsuper').text(description)
+    if ($('#descriptionToggleSuper') !== undefined) {
+      $('#descriptionToggleSuper').remove()
+    }
+    if (description !== 'No disponible') {
+      addDescriptionToggle(mode, description)
+    }
+  } else {
+    $('#comicid').text(comics[index].id)
+    $('#title').text(comics[index].title)
+    $('#issue').text(comics[index].issueNumber)
+    description = (comics[index].description !== null) ? comics[index].description : 'No disponible'
+    $('#descriptioncomic').text(description)
+    if ($('#descriptionToggleComic') !== undefined) {
+      $('#descriptionToggleComic').remove()
+    }
+    if (description !== 'No disponible') {
+      addDescriptionToggle(mode, description)
+    }
   }
 }
 
 /**
  * Mueve carrusel a la izquierda
  */
-function moveCarouselLeft() {
-  let index = +$('.third.left').attr('id').substr(10)
+function moveCarouselLeft(mode) {
+  let index = +$(`.${mode}.third.left`).attr('id').substr(9)
   index -= 1
-  moveCarousel(index)
+  moveCarousel(mode, index)
 }
 
 /**
  * Mueve carrusel a la derecha
  */
-function moveCarouselRight() {
-  let index = +$('.third.left').attr('id').substr(10)
+function moveCarouselRight(mode) {
+  let index = +$(`.${mode}.third.left`).attr('id').substr(9)
   index += 1
-  moveCarousel(index)
+  moveCarousel(mode, index)
 }
 
+/**
+* Desconectamos flechas si no nos hacen falta
+*/
 function deactivateArrows() {
-  $('#leftarrow').off('click')
-  $('#rightarrow').off('click')
+  $('#leftarrowSuper').off('click')
+  $('#rightarrowSuper').off('click')
+  $('#leftarrowComic').off('click')
+  $('#rightarrowComic').off('click')
 }
 
+/**
+ * Evitamos votos cada vez que alguien pulse enter fuera del dialog
+ */
 function deactivateKeys() {
   $(document).off('keydown')
 }
 
+/**
+ * Activa flechas.
+ * 
+ * REFACTORIZA
+ */
 function activateArrows() {
-  $('#leftarrow').click(() => {
-    moveCarouselLeft()
+  $('#leftarrowSuper').click(() => {
+    moveCarouselLeft('superheroes')
   })
-  $('#rightarrow').click(() => {
-    moveCarouselRight()
+  $('#rightarrowSuper').click(() => {
+    moveCarouselRight('superheroes')
   })
-}
-
-function activateCarousel() {
-  $('.left').click(() => {
-    moveCarouselLeft()
+  $('#leftarrowComic').click(() => {
+    moveCarouselLeft('comics')
   })
-  $('.right').click(() => {
-    moveCarouselRight()
+  $('#rightarrowComic').click(() => {
+    moveCarouselRight('comics')
   })
 }
 
 /**
- * Me permite activar/volver al modo de teclado habitual!
+ * Muy mono.
  */
-function activateKeys() {
-  $(document).keydown((event) => {
-    if (event.which === 13 || event.keyCode === 13) {
-      openDialog()
-    } else if (event.which === 37 || event.keyCode === 37) {
-      moveCarouselLeft()
-    } else if (event.which === 39 || event.keyCode === 39) {
-      moveCarouselRight()
-    }
+function activateCarousels(mode) {
+  $(`.left.${mode}`).click(() => {
+    moveCarouselLeft(mode)
+  })
+  $(`.right.${mode}`).click(() => {
+    moveCarouselRight(mode)
   })
 }
 
 function closeDialog() {
   deactivateKeys()
+  deactivateButtons()
   activateArrows()
-  activateKeys()
   $('.curtain').css('display', 'none')
   $('.dialog').css('display', 'none')
 }
 
 /**
- * Genera voto de personaje y guarda
+ * Genera voto de personaje/comic y guarda
  */
-function vote() {
+function vote(mode) {
   $('.popup').css('display', 'block')
   if (Storage !== void(0)) {
     const newVote = {}
@@ -140,8 +166,13 @@ function vote() {
     newVote.email = $('#txtEmail').val()
     newVote.telefono = $('#txtTfno').val()
     newVote.voto = $('#nameForm').text()
-    heroVotes.votos.push(newVote)
-    localStorage.herovotes = JSON.stringify(heroVotes)
+    if (mode === 'superheroes') {
+      heroVotes.votos.push(newVote)
+      localStorage.herovotes = JSON.stringify(heroVotes)
+    } else {
+      comicVotes.votos.push(newVote)
+      localStorage.comicvotes = JSON.stringify(comicVotes)
+    }
     setTimeout(() => { window.location = 'results.html' }, 3000)
   } else {
     closeDialog()
@@ -151,7 +182,7 @@ function vote() {
 /**
  * Abre dialogo y cambia estilo de control por teclado
  */
-function openDialog() {
+function openDialog(mode) {
   deactivateArrows()
   deactivateKeys()
   $(document).keydown((event) => {
@@ -159,19 +190,21 @@ function openDialog() {
       closeDialog()
     }
     if (event.which === 13 || event.keyCode === 13) {
-      vote()
+      vote(mode)
     }
   })
   $('.curtain').css('display', 'block')
   $('.dialog').css('display', 'flex')
-  const voteName = $('#main').text()
+  const getField = (mode === 'superheroes') ? '#name' : '#title'
+  const voteName = $(getField).text()
   $('#nameForm').text(voteName)
+  activateButtons(mode)
 }
 
 
-function activatePrincipal() {
-  $('.principal').click(() => {
-    openDialog()
+function activatePrincipal(mode) {
+  $(`.principal.${mode}`).click(() => {
+    openDialog(mode)
   })
 }
 
@@ -179,65 +212,87 @@ function activatePrincipal() {
  * El motor de nuestro Slideshow, vamos cambiando el index a partir del cual se
  * dibuja el carrusel. Simple!
  * 
- * Podría refactorizarse un poquitín, la verdad.
+ * Esto... esto ha ido a peor. Mucho.
  * @param {*} index 
  */
-function moveCarousel(index) {
-  $('#carrusel').children().remove()
+function moveCarousel(mode, index) {
+  const carouselMode = (mode === 'superheroes') ? '#carruselSuperheroes' : '#carruselComics'
+  $(carouselMode).children().remove()
+  
   let i
   if (index === -1) {
-    i = superheroesLength - 1
-  } else if (index === superheroesLength) {
+    i = petitionLength - 1
+  } else if (index === petitionLength) {
     i = 0
   } else {
     i = index
   }
   
+  const leftArrowId = (mode === 'superheroes') ? 'leftarrowSuper' : 'leftarrowComic'
+  const rightArrowId = (mode === 'superheroes') ? 'rightarrowSuper' : 'rightarrowComic'
+
+  const leftarrow = `<div id="${leftArrowId}" class="arrow" aria-label="Mueve selección a la izquierda"><img src="${arrow}" aria-labelledby="leftarrow" alt="Flecha izquierda"></div>`
+  $(leftarrow).appendTo(carouselMode)
   let j = 0
-  const leftarrow = `<div id="leftarrow" class="arrow" aria-label="Mueve selección a la izquierda"><img src="${arrow}" aria-labelledby="leftarrow" alt="Flecha izquierda"></div>`
-  $(leftarrow).appendTo('#carrusel')
   do {
-    const superhero = superheroes[i]
-    const superheroPic = `${superhero.thumbnail.path}.${superhero.thumbnail.extension}`
     let carouselElement
-    if (carouselClasses[j] !== 'principal') {
-      carouselElement = `<div id="superheroe${i}" data-name="${superhero.name}" class="superheroes ${carouselClasses[j]}"><img src="${superheroPic}" alt="${superhero.name}"></div>`
+    if (mode === 'superheroes') {
+      const superhero = superheroes[i]
+      const superheroPic = `${superhero.thumbnail.path}.${superhero.thumbnail.extension}`
+      
+      if (carouselClasses[j] !== 'principal') {
+        carouselElement = `<div id="superhero${i}" data-name="${superhero.name}" class="superheroes ${carouselClasses[j]}"><img src="${superheroPic}" alt="${superhero.name}"></div>`
+      } else {
+        carouselElement = `<div id="superhero${i}" data-name=="${superhero.name}" class="superheroes ${carouselClasses[j]}" aria-label="${superhero.name}"><img src="${superheroPic}" aria-labelledby="${superhero.name}" alt="${superhero.name}"></div>`
+        $('#currentHero').text(`${i + 1}/100`)
+      }
     } else {
-      carouselElement = `<div id="superheroe${i}" data-name=="${superhero.name}" class="superheroes ${carouselClasses[j]}" aria-label="${superhero.name}"><img src="${superheroPic}" aria-labelledby="${superhero.name}" alt="${superhero.name}"></div>`
-      $('#currentHero').text(`${i + 1}/10`)
+      const comic = comics[i]
+      const comicPic = `${comic.thumbnail.path}.${comic.thumbnail.extension}`
+      
+      if (carouselClasses[j] !== 'principal') {
+        carouselElement = `<div id="comiclist${i}" data-name="${comic.title}" class="comics ${carouselClasses[j]}"><img src="${comicPic}" alt="${comic.title}"></div>`
+      } else {
+        carouselElement = `<div id="comiclist${i}" data-name=="${comic.title}" class="comics ${carouselClasses[j]}" aria-label="${comic.title}"><img src="${comicPic}" aria-labelledby="${comic.title}" alt="${comic.title}"></div>`
+        $('#currentComic').text(`${i + 1}/100`)
+      }
     }
 
-    $(carouselElement).appendTo('#carrusel')
+    $(carouselElement).appendTo(carouselMode)
     i += 1
-    if (i === superheroesLength) {
+    if (i === petitionLength) {
       i = 0
     }
     j += 1
   } while (j !== carouselLength)
-  const rightarrow = `<div id="rightarrow" class="arrow" aria-label="Mueve selección a la derecha"><img src="${arrow}" aria-labelledby="rightarrow" alt="Flecha derecha"></div>`
-  $(rightarrow).appendTo('#carrusel')
-  activateCarousel()
-  activatePrincipal()
+
+  const rightarrow = `<div id="${rightArrowId}" class="arrow" aria-label="Mueve selección a la derecha"><img src="${arrow}" aria-labelledby="rightarrow" alt="Flecha derecha"></div>`
+  $(rightarrow).appendTo(carouselMode)
+
+  activateCarousels(mode)
+  activatePrincipal(mode)
   activateArrows()
-  refreshSuperHeroInfo()
+  refreshInfo(mode)
 }
 
-function generateCarousel() {
-  const i = superheroesLength - 2
-  moveCarousel(i)
+function deactivateButtons() {
+  $('#btnReturn').off()
+  $('#btnVote').off()
 }
 
-function activateButtons() {
+function activateButtons(mode) {
   $('#btnReturn').click(() => {
     closeDialog()
   })
 
   $('#btnVote').click(() => {
-    vote()
+    vote(mode)
   })
 }
 
-
+/**
+ * Cargamos votos! Weee!
+ */
 function loadVotes() {
   if (Storage !== void(0)) {
     if (localStorage.herovotes !== undefined) {
@@ -246,6 +301,13 @@ function loadVotes() {
       heroVotes = { votos: [] }
       localStorage.herovotes = JSON.stringify(heroVotes)
     }
+
+    if (localStorage.comicvotes !== undefined) {
+      comicVotes = JSON.parse(localStorage.comicvotes)
+    } else {
+      comicVotes = { votos: [] }
+      localStorage.comicvotes = JSON.stringify(comicVotes)
+    }
   } else {
     $('.popup').find('p').first().text('¡Voto no realizado!')
     $('.popup').find('p').last().text('No se ha podido guardar el voto, lo sentimos.')
@@ -253,45 +315,53 @@ function loadVotes() {
 }
 
 const queryFor = option => ({
-  characters: 'https://gateway.marvel.com/v1/public/characters',
+  superheroes: 'https://gateway.marvel.com/v1/public/characters',
   comics: 'https://gateway.marvel.com/v1/public/comics'
 })[option]
 
-/**
- * Petición Ajax al API de Marvel. Idealmente coger 100 y mover ahí, en la práctica... ofset FTW
- * @param {*} offset 
- */
-function loadSuperheroes(offset) {
-  superheroes = []
-  $.getJSON(queryFor('characters'), { offset: offset, limit: 100, apikey: publicKey }).done(function (response) {
-    for (let i = 0; i < superheroesLength; i++) {
-      superheroes.push(response.data.results[i])
+function loadStuff(mode) {
+  let aux = []
+  const spinnerMode = (mode === 'superheroes') ? '.spinnerSuper' : '.spinnerComic'
+  $(spinnerMode).append(`<img src="${spinner}"></img>`)
+  $.getJSON(queryFor(mode), { limit: 100, apikey: publicKey }).done(function (response) {
+    aux = response.data.results
+    if (mode === 'superheroes') {
+      superheroes = aux
+    } else {
+      comics = aux
     }
-    superheroes = response.data.results
-    generateCarousel()
+    moveCarousel(mode, 0)
+    $(spinnerMode).empty()
   })
 }
 
 /**
  * Le debo una cerveza al creador de esto!
  */
-function loadPaginator() {
-  $('.paginator').pagination({
+function loadPaginators() {
+  $('#paginatorSuperheroes').pagination({
     items: 100,
     itemsOnPage: 10,
     cssStyle: 'light-theme',
     onPageClick: (pageNum) => {
-      loadSuperheroes((pageNum * 10) - 10)
+      moveCarousel('superheroes', (pageNum * 10) - 10)
+    }
+  })
+  $('#paginatorComics').pagination({
+    items: 100,
+    itemsOnPage: 10,
+    cssStyle: 'light-theme',
+    onPageClick: (pageNum) => {
+      moveCarousel('comics', (pageNum * 10) - 10)
     }
   })
 }
 
 $(document).ready(() => {
-  loadSuperheroes(0)
-  loadPaginator()
+  loadStuff('superheroes')
+  loadStuff('comics')
+  loadPaginators()
   activateDescriptionToggle()
-  activateKeys()
-  activateButtons()
   loadVotes()
 })
 
